@@ -14,7 +14,7 @@ TEAM_CNT = 6  # 팀 개수
 MAX_TEAM_MEMBER_CNT = 10 # 한팀에 최대 멤버
 secret_key = os.environ.get('SECRET_KEY', None)
 SLACK_TOKEN = secret_key
-SLACK_CHANNEL = 'random'
+SLACK_CHANNEL = '0_공지사항'
 
 
 def create_db():
