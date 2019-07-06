@@ -15,11 +15,11 @@ MAX_TEAM_MEMBER_CNT = 10 # 한팀에 최대 멤버
 secret_key = os.environ.get('SECRET_KEY', None)
 SLACK_TOKEN = secret_key
 SLACK_CHANNEL = '0_공지사항'
-
+file_path = os.path.dirname(os.path.abspath(__file__))
 
 def create_db():
     # SQLite DB 연결
-    conn = sqlite3.connect("random_reviewer.db")
+    conn = sqlite3.connect(f"{file_path}/random_reviewer.db")
 
     # Connection 으로부터 Cursor 생성
     cur = conn.cursor()
@@ -55,7 +55,7 @@ def insert_basic_data():
     f.close()
 
     #2. db에 데이터 insert
-    conn = sqlite3.connect("random_reviewer.db") # SQLite DB 연결
+    conn = sqlite3.connect(f"{file_path}/random_reviewer.db") # SQLite DB 연결
     cur = conn.cursor() # Connection 으로부터 Cursor 생성
     for i, team in enumerate(team_list.keys()):
         q = "insert into team values({},'{}')".format(i+1, team)
@@ -109,7 +109,7 @@ def manufacture_user_db(_cur):
 
 def create_random_viewer():
     # SQLite DB 연결
-    conn = sqlite3.connect("random_reviewer.db")
+    conn = sqlite3.connect(f"{file_path}/random_reviewer.db")
 
     # Connection 으로부터 Cursor 생성
     cur = conn.cursor()
@@ -192,7 +192,7 @@ def print_my_reviewer():
     slack = Slacker(token)
 
     # SQLite DB 연결
-    conn = sqlite3.connect("random_reviewer.db")
+    conn = sqlite3.connect(f"{file_path}/random_reviewer.db")
 
     # Connection 으로부터 Cursor 생성
     cur = conn.cursor()
