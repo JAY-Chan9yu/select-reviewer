@@ -188,8 +188,7 @@ def create_random_viewer():
 
 # 콘솔에 출력 and text 파일에 쓰기
 def print_my_reviewer():
-    token = SLACK_TOKEN
-    slack = Slacker(token)
+    slack = Slacker(SLACK_TOKEN)
 
     # SQLite DB 연결
     conn = sqlite3.connect(f"{file_path}/random_reviewer.db")
@@ -215,7 +214,7 @@ def print_my_reviewer():
             # 각 멤버 관련된 json 정보
             json_member_list.append({
                 "title": "{}".format(me),
-                "value": "우리팀 리뷰어: {}, 다른팀 reviewer: {}".format(member.get(me).get('team_reviewer'), member.get(me).get('other_team_reviewer')),
+                "value": "- 우리팀 리뷰: {}\n- 다른팀 리뷰: {}".format(member.get(me).get('team_reviewer'), member.get(me).get('other_team_reviewer')),
                 "style": "good"
             })
 
@@ -230,7 +229,7 @@ def print_my_reviewer():
 
     slack.chat.post_message(
         SLACK_CHANNEL,
-        "- {} 리뷰어 -".format(date.strftime('%Y.%m.%d')),
+        "{} - 글또 Reviewer Select".format(date.strftime('%y.%m.%d')),
         attachments=json.dumps(json_team_list)
     )
     file.close()
