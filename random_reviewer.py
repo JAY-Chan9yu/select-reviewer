@@ -24,6 +24,7 @@ def create_db():
     # Connection 으로부터 Cursor 생성
     cur = conn.cursor()
 
+    cur.execute("CREATE TABLE run_date(id INTEGER primary key, date VARCHAR )")
     cur.execute("CREATE TABLE team(id INTEGER primary key, name char)")
     cur.execute("CREATE TABLE user(id INTEGER primary key, name char, team_id INTEGER , "
                 "team_reviewer_num integer , "
@@ -33,7 +34,9 @@ def create_db():
                 "other_team_review_cnt integer,"
                 "constraint user_team_fk foreign key (team_id) references team);")
 
-    conn.commit()  # 트랜젝션의 내용을 DB에 반영함
+    # 트랜젝션의 내용을 DB에 반영함
+    conn.commit()
+
     # Connection 닫기
     conn.close()
 
@@ -72,7 +75,9 @@ def insert_basic_data():
             review_index += 1
         team_num += 1
 
-    conn.commit()  # 트랜젝션의 내용을 DB에 반영함
+    # 트랜젝션의 내용을 DB에 반영함
+    conn.commit()
+
     # Connection 닫기
     conn.close()
 
@@ -113,6 +118,27 @@ def create_random_viewer():
 
     # Connection 으로부터 Cursor 생성
     cur = conn.cursor()
+
+    cur.execute("SELECT date FROM run_date WHERE id=1")
+    run_date_list = cur.fetchall()
+
+    if run_date_list:
+        run_date_str = run_date_list[0][0]  # 좀 지저분 하긴 하지만, 일단 1개만 쓸거라..
+        past_run_date = datetime.datetime.strptime(run_date_str, '%Y-%m-%d') + datetime.timedelta(days=14)
+        today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+
+        # 2주가 되지 않으면 함수 실행 X
+        if today < past_run_date:
+            return
+
+        # 스크립트 실행 날짜 업데이트
+        q = "UPDATE run_date SET date='{}' WHERE id=1".format(today.strftime('%Y-%m-%d'))
+        cur.execute(q)
+    else:
+        # 스크립트 첫 실행
+        run_date = datetime.datetime.today().strftime('%Y-%m-%d')
+        q = "INSERT INTO run_date VALUES ({},'{}')".format(1, run_date)
+        cur.execute(q)
 
     team_list, team_member_list, user_info_list, user_list = manufacture_user_db(cur)
 
@@ -180,7 +206,8 @@ def create_random_viewer():
                     cur.execute(q)
                     break
 
-    conn.commit()  # 트랜젝션의 내용을 DB에 반영함
+    # 트랜젝션의 내용을 DB에 반영함
+    conn.commit()
 
     # Connection 닫기
     conn.close()
